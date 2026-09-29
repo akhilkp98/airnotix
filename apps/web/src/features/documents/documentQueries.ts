@@ -13,6 +13,7 @@ export async function refreshAfterDocumentReview(queryClient: QueryClient) {
   await queryClient.invalidateQueries({ queryKey: ['staff'] });
   await queryClient.invalidateQueries({ queryKey: ['maintenance'] });
   await queryClient.invalidateQueries({ queryKey: ['approvals'] });
+  await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
 }
 
 export function useDocumentsQuery() {

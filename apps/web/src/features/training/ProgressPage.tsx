@@ -57,6 +57,7 @@ export function ProgressPage() {
     await queryClient.invalidateQueries({ queryKey: trainingQueryKeys.all });
     await queryClient.invalidateQueries({ queryKey: ['cadets'] });
     await queryClient.invalidateQueries({ queryKey: ['cadet'] });
+    await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
   };
 
   const save = async (event: FormEvent) => {

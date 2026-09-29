@@ -305,14 +305,16 @@ describe('flight screens', () => {
     operations.unmount();
 
     const dashboard = renderFlights('/dashboard', 'user-ops', repository);
-    expect(await screen.findByText('3')).toBeTruthy();
-    expect(screen.getByText('1')).toBeTruthy();
-    expect(screen.getByText('6')).toBeTruthy();
-    expect(screen.getByText('2')).toBeTruthy();
-    expect(screen.queryByText('Not connected')).toBeNull();
+    expect((await screen.findByText('Flights today')).parentElement?.textContent).toContain('3');
+    expect(screen.getAllByText('Pending approvals')[0]?.parentElement?.textContent).toContain('1');
+    expect(screen.getByText('Active cadets').parentElement?.textContent).toContain('6');
+    expect(screen.getByText('Aircraft available').parentElement?.textContent).toContain('2');
+    expect(screen.queryByText('Outstanding fees')).toBeNull();
     dashboard.unmount();
 
     renderFlights('/dashboard', 'user-maint', repository);
-    expect((await screen.findAllByText('Not shown for this role')).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText('Open defects')).length).toBeGreaterThan(0);
+    expect(screen.queryByText('Active cadets')).toBeNull();
+    expect(screen.queryByText('Not shown for this role')).toBeNull();
   });
 });

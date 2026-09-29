@@ -9,6 +9,7 @@ export const maintenanceQueryKeys = {
 export async function refreshAfterMaintenanceChange(queryClient: QueryClient) {
   await queryClient.invalidateQueries({ queryKey: maintenanceQueryKeys.all });
   await queryClient.invalidateQueries({ queryKey: ['fleet'] });
+  await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
 }
 
 export function useMaintenanceQuery() {

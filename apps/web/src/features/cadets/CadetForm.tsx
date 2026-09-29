@@ -68,6 +68,7 @@ export function CadetForm({
       }
       await queryClient.invalidateQueries({ queryKey: ['cadets'] });
       await queryClient.invalidateQueries({ queryKey: cadetQueryKeys.detail(user?.id ?? '', result.id) });
+      await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       notify('Cadet saved.');
       navigate(`/cadets/${result.id}`);
     },

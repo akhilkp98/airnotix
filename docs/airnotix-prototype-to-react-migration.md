@@ -1267,3 +1267,97 @@ A desktop browser pass was not run. This environment has no browser automation t
 
 - Between about 880px and 1100px of content width, five summary cards can wrap as four plus one. Forcing five columns there would make the cards too narrow.
 - Visual balance with the sidebar expanded and collapsed still needs a manual browser pass. Unit tests confirm that list, detail, create, and portal routes share one shell maximum. They do not render those widths in a browser.
+
+## 21. Role-specific dashboards
+
+Each staff role now opens its own home on `/dashboard`. The cadet home stays `/portal`. The page reads the same workspace records as the inner modules. It does not keep a second set of cadets, flights, fees, or defects, and it does not hard-code fixture totals in the components.
+
+`dashboardSummary` in `calculations.ts` is unchanged in behaviour: its operational flag is still true when the role has `cadets.view` or `flights.view`. The dashboards do not use that flag. Each card and section is loaded only for the matching role, and each action is shown only when `canUser` already allows it. Those checks are demonstration UI only. The future .NET API must enforce the same authorization. A client-supplied tenant id is not used as a security boundary.
+
+### What each role sees
+
+**Super Admin.** Demonstration account count, how many roles have an account (`listDemoUsers`), the newest audit events (`listAudit`), and the academy name and branch (`getAcademy`). Quick actions: Users & Roles, Academy Settings, Audit Log, Reports. Empty copy when there are no audit events or unread notifications. No cadet, flight, aircraft, or fee counts.
+
+**Academy Administrator.** Active cadets, on-hold cadets, flights on the demo day, aircraft whose planning status is Available, aircraft that are not Available, pending approvals, outstanding fees, and overdue accounts. Sections: today's flights, pending approvals with the existing approve and reject dialog (comment required, planning blockers still refuse approval), open defects, open work orders, pending documents, low-fuel tanks, unread notifications. Quick actions: Cadets, Flight Operations, Approvals, Finance, Fleet. September completed hours are not shown. Planning status is not an airworthiness decision. Fee figures stay illustrative.
+
+**Operations.** Active cadets, flights today, aircraft available, and pending approvals. Sections: today's flights, drafts, planning blockers and warnings from `schedulingIssues` on drafts and today's non-cancelled flights, aircraft that are not Available with any stored restriction, upcoming Leave blocks, upcoming Unavailable blocks (kept separate from the staff availability label), low fuel, and pending approvals as read-only rows. Quick actions: Schedule flight when `flights.create` is present, Flight Operations, Fleet, Fuel. No fee figures and no approve or reject buttons.
+
+**Chief Flying Instructor.** Active cadets, flights today, and pending approvals. Sections: pending approvals with the same decide workflow, illustrative cadet progress, pending documents, upcoming approved flights, and saved assessments labelled as history rather than a queue. Unread notifications. Quick actions: Approvals, Training progress, Cadets. No fee figures and no aircraft-availability KPI, because this role does not have `fleet.view`. Progress is not a licence or course-completion decision.
+
+**Instructor.** Personal to the signed-in staff id. Assigned active cadets (`listCadets` already filters `instructorId`), upcoming assigned flights on or after the demo day that are not completed, cancelled, or rejected (drafts included), recorded hours and illustrative progress for those cadets, the instructor's own qualification expiry as information only, and completed assigned flights whose `actual.followUp` is true. Quick actions: My cadets, Flight Operations, Training progress. No academy-wide cadet count, aircraft availability, or pending approvals. The query key is `['dashboard', 'instructor', userId, staffId]` so it cannot reuse an academy-wide dashboard result. Flight-completion assignment checks are unchanged. An instructor account with no staff id sees an empty state instead of academy records.
+
+**Maintenance.** Aircraft available, open defects (`openDefects`), open work orders (`openWorkOrders`), and aircraft not Available. Sections: open defects, open work orders assigned to the signed-in officer, all open work orders, planning status and restriction text, aircraft-owned documents, unread notifications. Quick actions: Maintenance, Fleet. A release note is not an authorisation to fly.
+
+**Finance.** Billed, collected, outstanding, overdue accounts, and expenses from `financeSnapshot`. Fee accounts with overdue rows first (`listFeeAccounts`), recent payments (`listPayments`), recent expenses (`listExpenses`), unread notifications. Quick actions: Finance, Cadets, Reports. No flight, aircraft, or approval metrics. Recorded payments are not a confirmed settlement, and the figures are not an accounting ledger.
+
+**HR / Staff Coordinator.** Staff count and qualification dates before the demo day, labelled informational and fictional. Availability labels on the staff record, upcoming Leave blocks, upcoming Unavailable blocks, staff whose qualification date is before the demo day, pending staff documents, unread notifications if any. Quick actions: HR & Staff, Documents. Leave and Unavailable blocks are not merged with the availability label, and there is no single "unavailable today" count.
+
+**Cadet.** `/portal` is unchanged except for a completed-flight count and a short completed-flight list derived from the existing `portalHome` flights via `completedFlights`. The snapshot stays scoped to the linked cadet. Progress, hours, fees, and payment-settlement caveats remain.
+
+### Data and cache
+
+Selectors live in `dashboardRules.ts` and call the existing domain helpers (`illustrativeProgress`, `recordedHoursForCadet`, `isLowStock`, `openDefects`, `openWorkOrders`, `qualificationBeforeDemoDay`, `schedulingIssues`). Role queries in `dashboardQueries.ts` use TanStack Query keys `['dashboard', role, userId]` (maintenance and instructor also include `staffId`). Mutations that already refreshed `['dashboard']` still do. The same prefix is now invalidated after maintenance, fuel, document, user, academy-settings, training-progress, and cadet-form saves.
+
+Quick actions and notification links only point at routes the current permission map already allows. The static status legend is not on these dashboards; status chips stay on the record rows.
+
+### Reports visibility
+
+`canViewReport` hides Fee collection unless the role has `finance.view`, and hides Audit activity unless the role has `audit.view`. Other reports stay available to anyone with `reports.view`. The report query is disabled when the kind is not allowed, and its key includes the user id. The page also refuses to render rows, cards, bars, filters, or the CSV button unless the kind is allowed. CSV still requires `reports.export`. The empty state says that totals or events are not shown. This is a demonstration UI check. The future API must enforce the same rule.
+
+### Checks
+
+`npm test` in `apps/web`: 23 files, 116 tests, all passed. Coverage includes each of the nine roles, instructor assignment scope, finance without flight metrics, maintenance assigned-to-me versus all open orders, approval comment validation, cadet completed flights, and fee and audit report gating.
+
+`npm run lint`: exit 0. The same eight `react/only-export-components` warnings remain (`snackbar.tsx`, `confirm.tsx`, `AuthProvider.tsx`, `router.tsx`, `WorkspaceRepositoryProvider.tsx`). No new warning was added.
+
+`npm run build`: succeeded (`tsc -b` and Vite). The existing chunk-size warning remains. The main bundle is about 1,387 kB minified.
+
+Browser-level testing was not performed. The browser automation tools were not available in this session. Role content was checked with Vitest and React Testing Library against the untouched fixture, not by signing in through a browser at desktop and mobile widths.
+
+### Known limits
+
+- Demonstration records are not production data. The demo day stays 29 September 2026.
+- Planning status, restriction windows, and release notes are not airworthiness or flight-release decisions.
+- Illustrative progress and recorded hours are not a licence, course certificate, or regulatory hour total.
+- Fee accounts, payments, and expenses are illustrative. A recorded payment is not a confirmed settlement.
+- Qualification dates before the demo day are fictional labels, not a legal or licensing check.
+- The instructor dashboard includes assigned drafts on or after the demo day. The fixture has no completed assigned flight with follow-up required, so that section is empty for the demonstration instructor.
+- Frontend permission checks do not secure the workspace. Equivalent authorization has to be enforced by the future API.
+
+## 22. Dashboard visual redesign
+
+The role dashboards and the cadet portal home now share one visual system. The records, permissions, and calculations are the same as section 21. Recharts is not a dependency of this app, so the summaries are drawn from the loaded records with compact bars, a segmented status strip, progress meters, and a flight scale. No historical series was invented.
+
+### Visual system
+
+`dashboardWidgets.tsx` provides the header, metric tiles, two-column layout, sections, status bars, the demo-day flight scale, progress rows, and outstanding-balance bars. Tiles use a navy, sky, teal, amber, or rose edge. Lime is limited to the available-aircraft tile and the primary quick action. Sky (`#245C86`) and teal (`#1A6B64`) were added to the token file for these summaries. Text stays navy or muted so colour is not the only status cue. Each tile can open the existing filtered list when that page already reads the query, such as `/cadets?status=Active`, `/fleet?status=Available`, and `/flight-operations?view=day&date=2026-09-29`.
+
+The header shows the academy and base when that dashboard already loads academy settings, the demo day, a Refresh button that refetches the role query, and the role’s quick actions. There is no date-range control, because the repository methods do not accept an arbitrary range. Caveats sit on the tile or section they qualify.
+
+### What each view emphasises
+
+Academy, operations, and instructor dashboards lead with the schedule scale and the items that need attention. Academy also shows cadet status and aircraft planning status from the loaded records. Operations keeps approvals read-only and separates planning blockers from warnings. The instructor view stays on assigned cadets and assigned flights.
+
+Chief flying instructor, maintenance, finance, HR, and super admin use the same tiles and sections. Finance compares outstanding balances with horizontal bars and does not draw a payment trend. HR shows availability labels separately from leave and unavailable blocks. The cadet portal keeps its existing cards and adds a progress meter for the stored illustrative percentage.
+
+### Instructor cadet names
+
+Flights FLT-2404 and FLT-2405 are assigned to the demonstration instructor, but the cadets on those flights are not in his assigned cadet list. `getCadet` returns null for those ids, so the dashboard does not guess a name. The row says “Cadet outside assigned list”. Assigned cadet Aarav Menon is still named.
+
+### Checks
+
+`npm test` in `apps/web`: 23 files, 117 tests, all passed. The extra test checks status counts and that a missing cadet name is not replaced with another cadet.
+
+`npm run lint`: exit 0. The same eight `react/only-export-components` warnings remain. No new warning.
+
+`npm run build`: succeeded. The existing chunk-size warning remains. The main bundle is about 1,400 kB minified.
+
+Browser-level testing was not performed. Browser automation was not available in this session.
+
+### Known limits
+
+- Bars and the flight scale describe the current workspace. They are not trends, targets, or live operations.
+- A planning status, defect, or release note is still not an airworthiness decision or an approval to fly.
+- Illustrative progress is still not a licence or a course certificate.
+- Fee bars are illustrative balances, not a ledger.
+- The flight-operations register can still show “Unknown cadet” for an instructor, because that page uses the same assigned-cadet list. Only the instructor dashboard wording was changed.

@@ -47,6 +47,7 @@ export function UsersPage() {
     setError('');
     await queryClient.invalidateQueries({ queryKey: queryKeys.demoUsers });
     await queryClient.invalidateQueries({ queryKey: ['audit'] });
+    await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     notify('Demo user added.');
   };
 

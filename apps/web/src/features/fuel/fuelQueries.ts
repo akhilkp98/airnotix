@@ -8,6 +8,7 @@ export const fuelQueryKeys = {
 
 export async function refreshAfterFuelChange(queryClient: QueryClient) {
   await queryClient.invalidateQueries({ queryKey: fuelQueryKeys.all });
+  await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
 }
 
 export function useFuelQuery() {

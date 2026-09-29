@@ -68,6 +68,17 @@ export function reportKind(value: string | null): ReportKind {
   return REPORTS.some(([id]) => id === value) ? (value as ReportKind) : 'roster';
 }
 
+/**
+ * Fee rows require finance view. Audit rows require audit view.
+ * Other reports stay available to anyone who can open Reports.
+ * This is a demonstration UI check. The future API must enforce the same rule.
+ */
+export function canViewReport(kind: ReportKind, access: { finance: boolean; audit: boolean }) {
+  if (kind === 'fees') return access.finance;
+  if (kind === 'audit') return access.audit;
+  return true;
+}
+
 function calculationState(records: ReportRecords): WorkspaceState {
   return {
     cadets: records.cadets,

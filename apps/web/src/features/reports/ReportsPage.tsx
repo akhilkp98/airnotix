@@ -13,6 +13,7 @@ import { tokens } from '../../theme/tokens';
 import { useAuth } from '../auth/AuthProvider';
 import { useReportQuery } from './reportQueries';
 import {
+  canViewReport,
   REPORTS,
   reportKind,
   reportToCsv,
@@ -39,9 +40,12 @@ export function ReportsPage() {
   const [params, setParams] = useSearchParams();
   const kind = reportKind(params.get('report'));
   const filters = filtersFrom(params);
-  const query = useReportQuery(kind, filters);
-  const options = useReportOptions();
   const { can } = useAuth();
+  const access = { finance: can('finance.view'), audit: can('audit.view') };
+  const allowed = canViewReport(kind, access);
+  const query = useReportQuery(kind, filters, allowed);
+  const options = useReportOptions();
+  const visibleReports = REPORTS.filter(([id]) => canViewReport(id, access));
 
   const setReport = (next: ReportKind) => {
     setParams(next === 'roster' ? {} : { report: next });
@@ -69,26 +73,34 @@ export function ReportsPage() {
       <PageHeader
         title="Reports"
         subtitle="Tables from the records already in this workspace. Filters narrow those rows. This is not a regulatory or financial-performance report."
-        actions={can('reports.export') ? (
+        actions={allowed && can('reports.export') ? (
           <Button variant="outlined" color="inherit" onClick={download} disabled={!query.data}>Demo CSV</Button>
         ) : null}
       />
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-        {REPORTS.map(([id, label]) => (
+        {visibleReports.map(([id, label]) => (
           <Button key={id} size="small" variant={kind === id ? 'contained' : 'outlined'} color={kind === id ? 'accent' : 'inherit'} onClick={() => setReport(id)}>
             {label}
           </Button>
         ))}
       </Box>
-      {query.isLoading || options.isLoading ? <CircularProgress aria-label="Loading reports" sx={{ color: 'primary.main' }} /> : null}
-      {query.isError || options.isError ? (
+      {!allowed ? (
+        <EmptyState
+          title="This report is not available"
+          body={kind === 'fees'
+            ? 'Fee collection is limited to demonstration roles that can view finance. Totals are not shown here.'
+            : 'Audit activity is limited to demonstration roles that can view the audit log. Events are not shown here.'}
+        />
+      ) : null}
+      {allowed && (query.isLoading || options.isLoading) ? <CircularProgress aria-label="Loading reports" sx={{ color: 'primary.main' }} /> : null}
+      {allowed && (query.isError || options.isError) ? (
         <EmptyState
           title="The report did not load"
           body="The workspace records could not be read. You can try again."
           action={<Button variant="contained" color="accent" onClick={() => { void query.refetch(); }}>Try again</Button>}
         />
       ) : null}
-      {query.data && options.data ? (
+      {allowed && query.data && options.data ? (
         <ReportBody report={query.data} kind={kind} filters={filters} options={options.data} onChange={setFilter} />
       ) : null}
     </>

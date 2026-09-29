@@ -83,19 +83,27 @@ export function itemName(state: WorkspaceState, itemId: string) {
   return 'Training item';
 }
 
+/** Illustrative item count against the course required count. Not a licence or course certificate. */
+export function illustrativeProgress(completedRequired: number, requiredCount: number) {
+  if (!requiredCount) return 0;
+  return Math.round((Number(completedRequired) / requiredCount) * 100);
+}
+
 export function progressPercent(state: WorkspaceState, cadet: Cadet | undefined) {
   const course = courseOf(state, cadet);
-  const total = course ? course.requiredCount : 0;
-  if (!cadet || !total) return 0;
-  return Math.round((Number(cadet.completedRequired) / total) * 100);
+  return illustrativeProgress(cadet ? cadet.completedRequired : 0, course ? course.requiredCount : 0);
+}
+
+export function recordedHoursForCadet(openingHours: number, flights: readonly Flight[], cadetId: string) {
+  const flown = flights
+    .filter((flight) => flight.cadetId === cadetId && flight.status === 'Completed' && flight.actual)
+    .reduce((sum, flight) => sum + Number(flight.actual?.hours || 0), 0);
+  return Math.round((openingHours + flown) * 10) / 10;
 }
 
 export function recordedCadetHours(state: WorkspaceState, cadetId: string) {
   const cadet = cadetOf(state, cadetId);
-  const flown = state.flights
-    .filter((flight) => flight.cadetId === cadetId && flight.status === 'Completed' && flight.actual)
-    .reduce((sum, flight) => sum + Number(flight.actual?.hours || 0), 0);
-  return Math.round(((cadet ? cadet.openingHours : 0) + flown) * 10) / 10;
+  return recordedHoursForCadet(cadet ? cadet.openingHours : 0, state.flights, cadetId);
 }
 
 export function recordedAircraftHours(state: WorkspaceState, aircraftId: string) {
@@ -171,8 +179,9 @@ export function financeSnapshot(state: WorkspaceState) {
 }
 
 /**
- * Port of the platform-only branch in `renderDashboard`.
- * A user without both `cadets.view` and `flights.view` gets an empty operational summary.
+ * Academy-wide counts kept for the original summary contract.
+ * `operational` is true when the role has cadet view or flight view.
+ * Role dashboards do not use this flag. Each card is gated by its own permission.
  */
 export function dashboardSummary(state: WorkspaceState, user: { role: RoleId } | null): DashboardSummary {
   const operational = Boolean(user && (canUser(user.role, 'cadets.view') || canUser(user.role, 'flights.view')));

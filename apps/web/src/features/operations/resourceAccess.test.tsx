@@ -125,7 +125,9 @@ describe('operational resource permissions', () => {
 
     renderPath('/dashboard', 'user-maint');
     expect(await screen.findByText('Aircraft available')).toBeTruthy();
-    await screen.findByText('2');
-    expect((await screen.findAllByText('Not shown for this role')).length).toBeGreaterThan(0);
+    expect(screen.getByText('Aircraft available').parentElement?.textContent).toContain('2');
+    expect(screen.getAllByText('Open defects').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Active cadets')).toBeNull();
+    expect(screen.queryByText('Not shown for this role')).toBeNull();
   });
 });

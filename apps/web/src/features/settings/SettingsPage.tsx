@@ -41,6 +41,7 @@ export function SettingsPage() {
     setDraft(null);
     await queryClient.invalidateQueries({ queryKey: queryKeys.academy });
     await queryClient.invalidateQueries({ queryKey: ['audit'] });
+    await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     notify('Settings saved in this browser.');
   };
 
