@@ -1,0 +1,52 @@
+.simplebar-track {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.simplebar-track.simplebar-vertical {
+  width: 8px;
+  right: 2px;
+}
+
+.simplebar-track.simplebar-horizontal {
+  height: 8px;
+  bottom: 2px;
+}
+
+.simplebar-scrollbar:before {
+  left: 1px;
+  right: 1px;
+  border-radius: 999px;
+  background: $simplebar-scrollbar-bg;
+  transition: opacity .25s ease, background-color .2s ease;
+}
+
+.simplebar-track.simplebar-vertical .simplebar-scrollbar:before {
+  top: 4px;
+  bottom: 4px;
+}
+
+.simplebar-scrollbar.simplebar-visible:before {
+  opacity: .34;
+  transition: opacity .25s ease, background-color .2s ease;
+}
+
+.simplebar-track:hover .simplebar-scrollbar.simplebar-visible:before,
+[data-simplebar].simplebar-dragging .simplebar-scrollbar.simplebar-visible:before {
+  background: $simplebar-scrollbar-hover-bg;
+  opacity: .55;
+}
+
+.simplebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-bottom: 0 !important;
+}
+
+[data-simplebar] {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: $sidebar-width;
+}

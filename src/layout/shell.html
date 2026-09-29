@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="@@DESCRIPTION@@">
+	<meta name="theme-color" content="#101C2C">
+	<title>@@TITLE@@ · Airnotix</title>
+	<link rel="icon" href="img/favicon.png?v=round" type="image/png">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+	<script>
+		try {
+			document.documentElement.classList.add("sidebar-hold");
+			if (sessionStorage.getItem("airnotix-sidebar-collapsed") === "1") {
+				document.documentElement.classList.add("sidebar-collapsed");
+			}
+		} catch (error) {}
+	</script>
+</head>
+<body data-page="@@PAGE@@" data-permission="@@PERMISSION@@">
+	<a class="skip-link" href="#main">Skip to content</a>
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar" aria-label="Primary">
+			<div class="sidebar-content js-simplebar">
+				<a class="sidebar-brand" href="index.html">
+					<img class="brand-logo" src="img/airnotix-logo-white.png" alt="Airnotix">
+				</a>
+				<ul class="sidebar-nav" data-nav-set="staff">
+					@@NAV@@
+				</ul>
+				<ul class="sidebar-nav" data-nav-set="cadet" hidden>
+					@@NAV_CADET@@
+				</ul>
+			</div>
+		</nav>
+
+		<div class="main">
+			<header class="navbar navbar-expand navbar-light navbar-bg">
+				<button class="sidebar-toggle js-sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="true">
+					<span class="visually-hidden">Toggle navigation</span>
+					<i class="hamburger align-self-center" aria-hidden="true"></i>
+				</button>
+				<div class="header-heading">
+					<h1 class="page-title">@@HEADING@@</h1>
+					<p class="header-subtitle">@@SUBTITLE@@</p>
+				</div>
+				<div class="header-tools">
+					<div class="search-wrap d-none d-lg-block">
+						<label class="visually-hidden" for="global-search">Search demo records</label>
+						<input class="form-control form-control-sm" id="global-search" type="search" placeholder="Search cadets, flights, aircraft">
+						<div class="search-results" id="search-results" hidden></div>
+					</div>
+					<span class="branch-chip d-none d-md-inline" id="branch-label">Kochi Training Base</span>
+					<ul class="navbar-nav">
+						<li class="nav-item dropdown">
+							<button class="nav-icon dropdown-toggle" type="button" id="alertsDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
+								<span class="position-relative">
+									<i class="align-middle" data-feather="bell" aria-hidden="true"></i>
+									<span class="indicator" id="notification-count">0</span>
+								</span>
+							</button>
+							<div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="alertsDropdown">
+								<div class="dropdown-menu-header" id="notification-header">Notifications</div>
+								<div class="list-group" id="notification-list"></div>
+								<div class="dropdown-menu-footer">
+									<button class="btn btn-link btn-sm" type="button" data-action="mark-notifications">Mark visible as read</button>
+								</div>
+							</div>
+						</li>
+						<li class="nav-item dropdown">
+							<button class="nav-link dropdown-toggle d-flex align-items-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+								<span class="avatar-initials" data-user-initials aria-hidden="true">MK</span>
+								<span class="d-none d-md-inline text-dark" data-user-name>Demo user</span>
+								<span class="visually-hidden">Account menu</span>
+							</button>
+							<div class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+								<div class="dropdown-item-text">
+									<strong data-user-name>Demo user</strong>
+									<div class="small text-muted" data-user-role>Role</div>
+								</div>
+								<div class="dropdown-divider"></div>
+								<h2 class="dropdown-header h6">Review as</h2>
+								<div id="role-switcher"></div>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="settings.html" data-shell-permission="settings.manage">Settings</a>
+								<button class="dropdown-item" type="button" data-action="reset-demo">Reset demo data</button>
+								<button class="dropdown-item" type="button" data-action="sign-out">Sign out</button>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</header>
+
+			<main id="main" class="content">
+				<div class="container-fluid p-0">
+					@@CONTENT@@
+				</div>
+			</main>
+
+			<footer class="footer">
+				<div class="container-fluid">
+					<p class="footer-copy">© 2026 Arionix Global LLP</p>
+					<p class="footer-note">Airnotix client demonstration prototype. All academy data is fictional.</p>
+				</div>
+			</footer>
+		</div>
+	</div>
+
+	<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title h5" id="confirmTitle">Confirm</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="confirmBody"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-accent" id="confirmAccept">Confirm</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title h5" id="recordModalTitle">Details</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="recordModalBody"></div>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/app.js"></script>
+</body>
+</html>

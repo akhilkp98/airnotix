@@ -1,0 +1,55 @@
+---
+title: Sign in
+heading: Sign in
+description: Simulated sign-in for the Airnotix demo workspace.
+layout: auth
+page: sign-in
+---
+<div class="text-center mb-4">
+	<img class="auth-logo" src="img/airnotix-logo.png" alt="Airnotix">
+	<div class="auth-parent">Arionix Global LLP</div>
+</div>
+<div class="card">
+	<div class="card-body p-4">
+		<p class="badge-status badge-progress mb-3">Demo mode</p>
+		<h1 class="h4 mb-1">Sign in to your academy workspace</h1>
+		<p class="text-muted">Northstar Flight Academy · Kochi Training Base</p>
+		<div class="alert alert-danger" id="sign-in-error" role="alert" hidden></div>
+		<div class="alert alert-info" id="reset-note" role="status" hidden></div>
+		<form id="sign-in-form">
+			<div class="mb-3">
+				<label class="form-label" for="demo-account">Demo account</label>
+				<select class="form-select" id="demo-account">
+					<option value="">Choose a reviewer account</option>
+					<option value="meera.krishnan@northstar.example">Meera Krishnan · Academy administrator</option>
+					<option value="kabir.nair@northstar.example">Kabir Nair · Operations manager</option>
+					<option value="nisha.varghese@northstar.example">Nisha Varghese · Chief flying instructor</option>
+					<option value="arun.menon@northstar.example">Arun Menon · Instructor</option>
+					<option value="ravi.das@northstar.example">Ravi Das · Maintenance officer</option>
+					<option value="priya.shah@northstar.example">Priya Shah · Finance officer</option>
+					<option value="devika.rao@northstar.example">Devika Rao · HR coordinator</option>
+					<option value="aarav.menon@northstar.example">Aarav Menon · Cadet</option>
+					<option value="anil.rao@arionix.example">Anil Rao · Super admin</option>
+				</select>
+			</div>
+			<div class="mb-3">
+				<label class="form-label" for="email">Email</label>
+				<input class="form-control" id="email" name="email" type="email" autocomplete="username" value="meera.krishnan@northstar.example" required>
+			</div>
+			<div class="mb-3">
+				<label class="form-label" for="password">Password</label>
+				<div class="input-group">
+					<input class="form-control" id="password" name="password" type="password" autocomplete="current-password" value="demonstration" required>
+					<button class="btn btn-outline-secondary" id="toggle-password" type="button" aria-pressed="false">Show</button>
+				</div>
+			</div>
+			<div class="form-check mb-3">
+				<input class="form-check-input" type="checkbox" id="remember-demo" checked>
+				<label class="form-check-label" for="remember-demo">Remember this email on this browser</label>
+			</div>
+			<button class="btn btn-accent w-100" type="submit">Sign in</button>
+		</form>
+		<p class="mt-3 mb-0"><a href="#" id="forgot-password">Forgot password</a></p>
+	</div>
+</div>
+<p class="text-center text-muted small mt-3 mb-0">No account is created and nothing is sent to a server. Shared demo password: demonstration.</p>

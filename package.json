@@ -1,0 +1,53 @@
+{
+  "name": "airnotix-prototype",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Airnotix client demonstration prototype for flying academy management. Interface foundations adapted from AdminKit (MIT).",
+  "license": "MIT",
+  "author": "Arionix Global LLP",
+  "scripts": {
+    "render": "node scripts/render-pages.js",
+    "build": "cross-env NODE_ENV=production webpack --config webpack.config.js --progress",
+    "watch": "webpack --config webpack.config.js --watch --progress",
+    "start": "webpack serve --config webpack.config.js --progress"
+  },
+  "browserslist": [
+    ">= 0.5%",
+    "last 2 major versions",
+    "not dead",
+    "Chrome >= 60",
+    "Firefox >= 60",
+    "Firefox ESR",
+    "iOS >= 12",
+    "Safari >= 12",
+    "not Explorer <= 11"
+  ],
+  "dependencies": {
+    "@popperjs/core": "2.11.8",
+    "bootstrap": "5.3.8",
+    "chart.js": "2.9.4",
+    "feather-icons": "4.29.2",
+    "flatpickr": "4.6.13",
+    "simplebar": "5.3.9"
+  },
+  "devDependencies": {
+    "@babel/core": "7.29.7",
+    "@babel/preset-env": "7.29.7",
+    "autoprefixer": "10.5.4",
+    "babel-loader": "9.2.1",
+    "copy-webpack-plugin": "11.0.0",
+    "cross-env": "7.0.3",
+    "css-loader": "6.11.0",
+    "css-minimizer-webpack-plugin": "5.0.1",
+    "eslint": "8.57.1",
+    "filemanager-webpack-plugin": "8.0.0",
+    "mini-css-extract-plugin": "2.10.2",
+    "postcss-loader": "7.3.4",
+    "sass": "1.102.0",
+    "sass-loader": "13.3.3",
+    "terser-webpack-plugin": "5.6.1",
+    "webpack": "5.109.2",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "4.15.2"
+  }
+}

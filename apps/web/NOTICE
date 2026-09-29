@@ -1,0 +1,12 @@
+Airnotix web application
+Copyright Arionix Global LLP
+
+This application does not include AdminKit source code. The marks in public/
+(airnotix-logo.png, airnotix-logo-white.png, and favicon.png) are Airnotix
+brand assets.
+
+Third-party packages are used under their own licenses:
+- React, React Router, Vite, MUI, MUI X Data Grid (Community), Emotion,
+  TanStack Query: MIT
+- Lucide: ISC
+- Inter, via Fontsource: SIL Open Font License 1.1
